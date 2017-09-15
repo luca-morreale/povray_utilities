@@ -25,7 +25,7 @@ void copyFile(BoostPath &source, BoostPath &dest);
 int main(int argc, char *argv[]) {
 
     if (argc < ARGS + 1) {
-        std::cout << argv[0] << " source.pov startx starty startz tx ty tz Nx Ny Nz" << std::endl;
+        std::cout << argv[0] << " source.pov startx starty startz lx ly lz tx ty tz Nx Ny Nz" << std::endl;
         return 1;
     }
 
@@ -38,6 +38,9 @@ int main(int argc, char *argv[]) {
     start.x = strtod(argv[2], NULL);
     start.y = strtod(argv[3], NULL);
     start.z = strtod(argv[4], NULL);
+    zdir.x = strtod(argv[2], NULL);
+    zdir.y = strtod(argv[3], NULL);
+    zdir.z = strtod(argv[4], NULL);
     translate.x = strtod(argv[5], NULL);
     translate.y = strtod(argv[6], NULL);
     translate.z = strtod(argv[7], NULL);
@@ -84,14 +87,13 @@ std::string readModel(std::string &source)
 
 std::string getFilename(GLMVec3 &pos, GLMVec3 &lat)
 {
-    std::stringstream out;
-    out << pos.x << "_" << pos.y << "_" << pos.z;
-
-
     GLMMat4 view = glm::lookAt(pos, lat, GLMVec3(0.0f, -1.0f, 0.0f));
     GLMMat3 rotation(view);
+    rotation = glm::transpose(rotation);
     GLMVec3 angles = computeAngles(rotation);
 
+    std::stringstream out;
+    out << pos.x << "_" << pos.y << "_" << pos.z;
     out << "_" << angles.x << "_" << angles.y << "_" << angles.z;
     return out.str();
 }
